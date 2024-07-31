@@ -605,6 +605,114 @@ if you can identify the runtime complexity of different algorithms. It's a super
         - [ ] resize(new_capacity) // private function
             - when you reach capacity, resize to double the size
             - when popping an item, if the size is 1/4 of capacity, resize to half
+<details>
+<summary>Click to view the answers.</summary>
+
+```
+import ctypes
+
+class Vector:
+    def __init__(self):
+        self._size = 0
+        self._capacity = 16
+        self._array = self._make_array(self._capacity)
+
+    def _make_array(self, new_capacity):
+        """Allocate a new array with the given capacity."""
+        return (new_capacity * ctypes.py_object)()
+
+    def size(self):
+        """Return the number of items in the vector."""
+        return self._size
+
+    def capacity(self):
+        """Return the capacity of the vector."""
+        return self._capacity
+
+    def is_empty(self):
+        """Return True if the vector is empty, False otherwise."""
+        return self._size == 0
+
+    def at(self, index):
+        """Return the item at the given index."""
+        if index >= self._size or index < 0:
+            raise IndexError("Index out of bounds")
+        return self._array[index]
+
+    def _resize(self, new_capacity):
+        """Resize internal array to the new capacity."""
+        new_array = self._make_array(new_capacity)
+        for i in range(self._size):
+            new_array[i] = self._array[i]
+        self._array = new_array
+        self._capacity = new_capacity
+
+    def push(self, item):
+        """Add an item to the end of the vector."""
+        if self._size == self._capacity:
+            self._resize(2 * self._capacity)
+        self._array[self._size] = item
+        self._size += 1
+
+    def insert(self, index, item):
+        """Insert an item at the given index, shifting trailing elements."""
+        if index > self._size or index < 0:
+            raise IndexError("Index out of bounds")
+        if self._size == self._capacity:
+            self._resize(2 * self._capacity)
+        for i in range(self._size, index, -1):
+            self._array[i] = self._array[i - 1]
+        self._array[index] = item
+        self._size += 1
+
+    def prepend(self, item):
+        """Insert an item at the beginning of the vector."""
+        self.insert(0, item)
+
+    def pop(self):
+        """Remove and return the item from the end of the vector."""
+        if self._size == 0:
+            raise IndexError("Pop from empty vector")
+        item = self._array[self._size - 1]
+        self._array[self._size - 1] = None
+        self._size -= 1
+        if self._size > 0 and self._size == self._capacity // 4:
+            self._resize(self._capacity // 2)
+        return item
+
+    def delete(self, index):
+        """Delete the item at the given index, shifting trailing elements."""
+        if index >= self._size or index < 0:
+            raise IndexError("Index out of bounds")
+        for i in range(index, self._size - 1):
+            self._array[i] = self._array[i + 1]
+        self._array[self._size - 1] = None
+        self._size -= 1
+        if self._size > 0 and self._size == self._capacity // 4:
+            self._resize(self._capacity // 2)
+
+    def remove(self, item):
+        """Remove all instances of the item from the vector."""
+        index = 0
+        while index < self._size:
+            if self._array[index] == item:
+                self.delete(index)
+            else:
+                index += 1
+
+    def find(self, item):
+        """Return the first index of the item, or -1 if not found."""
+        for i in range(self._size):
+            if self._array[i] == item:
+                return i
+        return -1
+
+    def __str__(self):
+        """Return a string representation of the vector."""
+        return str([self._array[i] for i in range(self._size)])
+```
+</details>
+
     - [ ] Time
         - O(1) to add/remove at end (amortized for allocations for more space), index, or update
         - O(n) to insert/remove elsewhere
