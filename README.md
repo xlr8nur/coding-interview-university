@@ -736,29 +736,325 @@ class Vector:
         (for when you pass a pointer to a function that may change the address where that pointer points)
         This page is just to get a grasp on ptr to ptr. I don't recommend this list traversal style. Readability and maintainability suffer due to cleverness.
         - [Pointers to Pointers](https://www.eskimo.com/~scs/cclass/int/sx8.html)
-    - [ ] Implement (I did with tail pointer & without):
-        - [ ] size() - returns the number of data elements in the list
-        - [ ] empty() - bool returns true if empty
-        - [ ] value_at(index) - returns the value of the nth item (starting at 0 for first)
-        - [ ] push_front(value) - adds an item to the front of the list
-        - [ ] pop_front() - remove the front item and return its value
-        - [ ] push_back(value) - adds an item at the end
-        - [ ] pop_back() - removes end item and returns its value
-        - [ ] front() - get the value of the front item
-        - [ ] back() - get the value of the end item
-        - [ ] insert(index, value) - insert value at index, so the current item at that index is pointed to by the new item at the index
-        - [ ] erase(index) - removes node at given index
-        - [ ] value_n_from_end(n) - returns the value of the node at the nth position from the end of the list
-        - [ ] reverse() - reverses the list
-        - [ ] remove_value(value) - removes the first item in the list with this value
-    - [ ] Doubly-linked List
+    - [x] Implement (I did with tail pointer & without):
+        - [x] size() - returns the number of data elements in the list
+        - [x] empty() - bool returns true if empty
+        - [x] value_at(index) - returns the value of the nth item (starting at 0 for first)
+        - [x] push_front(value) - adds an item to the front of the list
+        - [x] pop_front() - remove the front item and return its value
+        - [x] push_back(value) - adds an item at the end
+        - [x] pop_back() - removes end item and returns its value
+        - [x] front() - get the value of the front item
+        - [x] back() - get the value of the end item
+        - [x] insert(index, value) - insert value at index, so the current item at that index is pointed to by the new item at the index
+        - [x] erase(index) - removes node at given index
+        - [x] value_n_from_end(n) - returns the value of the node at the nth position from the end of the list
+        - [x] reverse() - reverses the list
+        - [x] remove_value(value) - removes the first item in the list with this value
+    - [x] Doubly-linked List
         - [Description (video)](https://www.coursera.org/lecture/data-structures/doubly-linked-lists-jpGKD)
         - No need to implement
+<details>
+	<summary>Answers.</summary>
+	
+```
+ class Node:
+    def __init__(self, value=None):
+        self.value = value
+        self.next = None
+
+class LinkedListWithTail:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+        self._size = 0
+
+    def size(self):
+        return self._size
+
+    def empty(self):
+        return self.head is None
+
+    def value_at(self, index):
+        if index < 0 or index >= self._size:
+            raise IndexError("Index out of bounds")
+        current = self.head
+        for _ in range(index):
+            current = current.next
+        return current.value
+
+    def push_front(self, value):
+        new_node = Node(value)
+        new_node.next = self.head
+        self.head = new_node
+        if self._size == 0:
+            self.tail = new_node
+        self._size += 1
+
+    def pop_front(self):
+        if self.empty():
+            raise IndexError("Pop from empty list")
+        value = self.head.value
+        self.head = self.head.next
+        self._size -= 1
+        if self._size == 0:
+            self.tail = None
+        return value
+
+    def push_back(self, value):
+        new_node = Node(value)
+        if self.empty():
+            self.head = new_node
+            self.tail = new_node
+        else:
+            self.tail.next = new_node
+            self.tail = new_node
+        self._size += 1
+
+    def pop_back(self):
+        if self.empty():
+            raise IndexError("Pop from empty list")
+        if self.head == self.tail:
+            value = self.tail.value
+            self.head = None
+            self.tail = None
+        else:
+            current = self.head
+            while current.next != self.tail:
+                current = current.next
+            value = self.tail.value
+            self.tail = current
+            self.tail.next = None
+        self._size -= 1
+        return value
+
+    def front(self):
+        if self.empty():
+            raise IndexError("List is empty")
+        return self.head.value
+
+    def back(self):
+        if self.empty():
+            raise IndexError("List is empty")
+        return self.tail.value
+
+    def insert(self, index, value):
+        if index < 0 or index > self._size:
+            raise IndexError("Index out of bounds")
+        if index == 0:
+            self.push_front(value)
+            return
+        if index == self._size:
+            self.push_back(value)
+            return
+        new_node = Node(value)
+        current = self.head
+        for _ in range(index - 1):
+            current = current.next
+        new_node.next = current.next
+        current.next = new_node
+        self._size += 1
+
+    def erase(self, index):
+        if index < 0 or index >= self._size:
+            raise IndexError("Index out of bounds")
+        if index == 0:
+            return self.pop_front()
+        current = self.head
+        for _ in range(index - 1):
+            current = current.next
+        value = current.next.value
+        current.next = current.next.next
+        if current.next is None:
+            self.tail = current
+        self._size -= 1
+        return value
+
+    def value_n_from_end(self, n):
+        return self.value_at(self._size - n - 1)
+
+    def reverse(self):
+        prev = None
+        current = self.head
+        self.tail = self.head
+        while current:
+            next_node = current.next
+            current.next = prev
+            prev = current
+            current = next_node
+        self.head = prev
+
+    def remove_value(self, value):
+        if self.empty():
+            return
+        if self.head.value == value:
+            self.pop_front()
+            return
+        current = self.head
+        while current.next and current.next.value != value:
+            current = current.next
+        if current.next:
+            if current.next == self.tail:
+                self.tail = current
+            current.next = current.next.next
+            self._size -= 1
+
+    def __str__(self):
+        values = []
+        current = self.head
+        while current:
+            values.append(current.value)
+            current = current.next
+        return str(values)
+
+--without tail--
+
+class Node:
+    def __init__(self, value=None):
+        self.value = value
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+        self._size = 0
+
+    def size(self):
+        return self._size
+
+    def empty(self):
+        return self.head is None
+
+    def value_at(self, index):
+        if index < 0 or index >= self._size:
+            raise IndexError("Index out of bounds")
+        current = self.head
+        for _ in range(index):
+            current = current.next
+        return current.value
+
+    def push_front(self, value):
+        new_node = Node(value)
+        new_node.next = self.head
+        self.head = new_node
+        self._size += 1
+
+    def pop_front(self):
+        if self.empty():
+            raise IndexError("Pop from empty list")
+        value = self.head.value
+        self.head = self.head.next
+        self._size -= 1
+        return value
+
+    def push_back(self, value):
+        new_node = Node(value)
+        if self.empty():
+            self.head = new_node
+        else:
+            current = self.head
+            while current.next:
+                current = current.next
+            current.next = new_node
+        self._size += 1
+
+    def pop_back(self):
+        if self.empty():
+            raise IndexError("Pop from empty list")
+        current = self.head
+        if self.head.next is None:
+            value = self.head.value
+            self.head = None
+        else:
+            while current.next.next:
+                current = current.next
+            value = current.next.value
+            current.next = None
+        self._size -= 1
+        return value
+
+    def front(self):
+        if self.empty():
+            raise IndexError("List is empty")
+        return self.head.value
+
+    def back(self):
+        if self.empty():
+            raise IndexError("List is empty")
+        current = self.head
+        while current.next:
+            current = current.next
+        return current.value
+
+    def insert(self, index, value):
+        if index < 0 or index > self._size:
+            raise IndexError("Index out of bounds")
+        if index == 0:
+            self.push_front(value)
+            return
+        new_node = Node(value)
+        current = self.head
+        for _ in range(index - 1):
+            current = current.next
+        new_node.next = current.next
+        current.next = new_node
+        self._size += 1
+
+    def erase(self, index):
+        if index < 0 or index >= self._size:
+            raise IndexError("Index out of bounds")
+        if index == 0:
+            return self.pop_front()
+        current = self.head
+        for _ in range(index - 1):
+            current = current.next
+        value = current.next.value
+        current.next = current.next.next
+        self._size -= 1
+        return value
+
+    def value_n_from_end(self, n):
+        return self.value_at(self._size - n - 1)
+
+    def reverse(self):
+        prev = None
+        current = self.head
+        while current:
+            next_node = current.next
+            current.next = prev
+            prev = current
+            current = next_node
+        self.head = prev
+
+    def remove_value(self, value):
+        if self.empty():
+            return
+        if self.head.value == value:
+            self.pop_front()
+            return
+        current = self.head
+        while current.next and current.next.value != value:
+            current = current.next
+        if current.next:
+            current.next = current.next.next
+            self._size -= 1
+
+    def __str__(self):
+        values = []
+        current = self.head
+        while current:
+            values.append(current.value)
+            current = current.next
+        return str(values)
+```
+
+
+</details>
 
 - ### Stack
-    - [ ] [Stacks (video)](https://www.coursera.org/lecture/data-structures/stacks-UdKzQ)
-    - [ ] [[Review] Stacks in 3 minutes (video)](https://youtu.be/KcT3aVgrrpU)
-    - [ ] Will not implement. Implementing with the array is trivial
+    - [x] [Stacks (video)](https://www.coursera.org/lecture/data-structures/stacks-UdKzQ)
+    - [x] [[Review] Stacks in 3 minutes (video)](https://youtu.be/KcT3aVgrrpU)
+    - [x] Will not implement. Implementing with the array is trivial
 
 - ### Queue
     - [ ] [Queue (video)](https://www.coursera.org/lecture/data-structures/queues-EShpq)
