@@ -1075,6 +1075,120 @@ class LinkedList:
         - enqueue: O(1) (amortized, linked list and array [probing])
         - dequeue: O(1) (linked list and array)
         - empty: O(1) (linked list and array)
+<details>
+	<summary>Answers.</summary>
+	
+ ```
+#with Tail Pointer
+
+class Node:
+    def __init__(self, value=None):
+        self.value = value
+        self.next = None
+
+class LinkedListQueue:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+        self._size = 0
+
+    def enqueue(self, value):
+        """Adds value at a position at the tail."""
+        new_node = Node(value)
+        if self.tail:
+            self.tail.next = new_node
+        self.tail = new_node
+        if self.empty():
+            self.head = new_node
+        self._size += 1
+
+    def dequeue(self):
+        """Returns value and removes least recently added element (front)."""
+        if self.empty():
+            raise IndexError("Dequeue from empty queue")
+        value = self.head.value
+        self.head = self.head.next
+        if self.head is None:
+            self.tail = None
+        self._size -= 1
+        return value
+
+    def empty(self):
+        """Returns True if the queue is empty, False otherwise."""
+        return self._size == 0
+
+    def size(self):
+        """Returns the number of elements in the queue."""
+        return self._size
+
+    def front(self):
+        """Returns the front element of the queue without removing it."""
+        if self.empty():
+            raise IndexError("Queue is empty")
+        return self.head.value
+
+    def __str__(self):
+        values = []
+        current = self.head
+        while current:
+            values.append(current.value)
+            current = current.next
+        return str(values)
+
+  ```
+```
+#fixed array
+
+class FixedArrayQueue:
+    def __init__(self, capacity):
+        self._array = [None] * capacity
+        self._capacity = capacity
+        self._size = 0
+        self._front = 0
+        self._back = 0
+
+    def enqueue(self, value):
+        """Adds item at end of available storage."""
+        if self.full():
+            raise OverflowError("Queue is full")
+        self._array[self._back] = value
+        self._back = (self._back + 1) % self._capacity
+        self._size += 1
+
+    def dequeue(self):
+        """Returns value and removes least recently added element."""
+        if self.empty():
+            raise IndexError("Dequeue from empty queue")
+        value = self._array[self._front]
+        self._array[self._front] = None  # Optional: Clear the slot
+        self._front = (self._front + 1) % self._capacity
+        self._size -= 1
+        return value
+
+    def empty(self):
+        """Returns True if the queue is empty, False otherwise."""
+        return self._size == 0
+
+    def full(self):
+        """Returns True if the queue is full, False otherwise."""
+        return self._size == self._capacity
+
+    def size(self):
+        """Returns the number of elements in the queue."""
+        return self._size
+
+    def front(self):
+        """Returns the front element of the queue without removing it."""
+        if self.empty():
+            raise IndexError("Queue is empty")
+        return self._array[self._front]
+
+    def __str__(self):
+        return str([self._array[(self._front + i) % self._capacity] for i in range(self._size)])
+
+```
+
+</details>
 
 - ### Hash table
     - [ ] Videos:
