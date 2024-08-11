@@ -1191,30 +1191,125 @@ class FixedArrayQueue:
 </details>
 
 - ### Hash table
-    - [ ] Videos:
-        - [ ] [Hashing with Chaining (video)](https://www.youtube.com/watch?v=0M_kIqhwbFo&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb&index=8)
-        - [ ] [Table Doubling, Karp-Rabin (video)](https://www.youtube.com/watch?v=BRO7mVIFt08&index=9&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb)
-        - [ ] [Open Addressing, Cryptographic Hashing (video)](https://www.youtube.com/watch?v=rvdJDijO2Ro&index=10&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb)
-        - [ ] [PyCon 2010: The Mighty Dictionary (video)](https://www.youtube.com/watch?v=C4Kc8xzcA68)
-        - [ ] [PyCon 2017: The Dictionary Even Mightier (video)](https://www.youtube.com/watch?v=66P5FMkWoVU)
-        - [ ] [(Advanced) Randomization: Universal & Perfect Hashing (video)](https://www.youtube.com/watch?v=z0lJ2k0sl1g&list=PLUl4u3cNGP6317WaSNfmCvGym2ucw3oGp&index=11)
-        - [ ] [(Advanced) Perfect hashing (video)](https://www.youtube.com/watch?v=N0COwN14gt0&list=PL2B4EEwhKD-NbwZ4ezj7gyc_3yNrojKM9&index=4)
-        - [ ] [[Review] Hash tables in 4 minutes (video)](https://youtu.be/knV86FlSXJ8)
+    - [x] Videos:
+        - [x] [Hashing with Chaining (video)](https://www.youtube.com/watch?v=0M_kIqhwbFo&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb&index=8)
+        - [x] [Table Doubling, Karp-Rabin (video)](https://www.youtube.com/watch?v=BRO7mVIFt08&index=9&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb)
+        - [x] [Open Addressing, Cryptographic Hashing (video)](https://www.youtube.com/watch?v=rvdJDijO2Ro&index=10&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb)
+        - [x] [PyCon 2010: The Mighty Dictionary (video)](https://www.youtube.com/watch?v=C4Kc8xzcA68)
+        - [x] [PyCon 2017: The Dictionary Even Mightier (video)](https://www.youtube.com/watch?v=66P5FMkWoVU)
+        - [x] [(Advanced) Randomization: Universal & Perfect Hashing (video)](https://www.youtube.com/watch?v=z0lJ2k0sl1g&list=PLUl4u3cNGP6317WaSNfmCvGym2ucw3oGp&index=11)
+        - [x] [(Advanced) Perfect hashing (video)](https://www.youtube.com/watch?v=N0COwN14gt0&list=PL2B4EEwhKD-NbwZ4ezj7gyc_3yNrojKM9&index=4)
+        - [x] [[Review] Hash tables in 4 minutes (video)](https://youtu.be/knV86FlSXJ8)
 
-    - [ ] Online Courses:
-        - [ ] [Core Hash Tables (video)](https://www.coursera.org/lecture/data-structures-optimizing-performance/core-hash-tables-m7UuP)
-        - [ ] [Data Structures (video)](https://www.coursera.org/learn/data-structures/home/week/4)
-        - [ ] [Phone Book Problem (video)](https://www.coursera.org/lecture/data-structures/phone-book-problem-NYZZP)
-        - [ ] distributed hash tables:
+    - [x] Online Courses:
+        - [x] [Core Hash Tables (video)](https://www.coursera.org/lecture/data-structures-optimizing-performance/core-hash-tables-m7UuP)
+        - [x] [Data Structures (video)](https://www.coursera.org/learn/data-structures/home/week/4)
+        - [x] [Phone Book Problem (video)](https://www.coursera.org/lecture/data-structures/phone-book-problem-NYZZP)
+        - [x] distributed hash tables:
             - [Instant Uploads And Storage Optimization In Dropbox (video)](https://www.coursera.org/lecture/data-structures/instant-uploads-and-storage-optimization-in-dropbox-DvaIb)
             - [Distributed Hash Tables (video)](https://www.coursera.org/lecture/data-structures/distributed-hash-tables-tvH8H)
 
-    - [ ] Implement with array using linear probing
+    - [x] Implement with array using linear probing
         - hash(k, m) - m is the size of the hash table
         - add(key, value) - if the key already exists, update value
         - exists(key)
         - get(key)
         - remove(key)
+<summary>Answers.</summary>
+<details>
+	
+ ```
+ class HashTable:
+    def __init__(self, capacity=8):
+        self.capacity = capacity
+        self.size = 0
+        self.table = [None] * self.capacity
+
+    def hash(self, key):
+        """Hash function using Python's built-in hash function."""
+        return hash(key) % self.capacity
+
+    def add(self, key, value):
+        """Adds or updates the key-value pair in the hash table."""
+        idx = self.hash(key)
+        start_idx = idx  # Remember where we started to detect a full cycle
+
+        while self.table[idx] is not None:
+            existing_key, _ = self.table[idx]
+            if existing_key == key:
+                # Update the existing key with the new value
+                self.table[idx] = (key, value)
+                return
+            idx = (idx + 1) % self.capacity
+            if idx == start_idx:
+                # We've looped back to the start, so the table is full
+                raise OverflowError("Hash table is full")
+
+        self.table[idx] = (key, value)
+        self.size += 1
+
+    def exists(self, key):
+        """Checks if the key exists in the hash table."""
+        idx = self.hash(key)
+        start_idx = idx
+
+        while self.table[idx] is not None:
+            existing_key, _ = self.table[idx]
+            if existing_key == key:
+                return True
+            idx = (idx + 1) % self.capacity
+            if idx == start_idx:
+                break
+
+        return False
+
+    def get(self, key):
+        """Gets the value associated with the key."""
+        idx = self.hash(key)
+        start_idx = idx
+
+        while self.table[idx] is not None:
+            existing_key, value = self.table[idx]
+            if existing_key == key:
+                return value
+            idx = (idx + 1) % self.capacity
+            if idx == start_idx:
+                break
+
+        raise KeyError("Key not found")
+
+    def remove(self, key):
+        """Removes the key-value pair from the hash table."""
+        idx = self.hash(key)
+        start_idx = idx
+
+        while self.table[idx] is not None:
+            existing_key, _ = self.table[idx]
+            if existing_key == key:
+                self.table[idx] = None
+                self.size -= 1
+
+                # Rehash the subsequent elements
+                next_idx = (idx + 1) % self.capacity
+                while self.table[next_idx] is not None:
+                    rehash_key, rehash_value = self.table[next_idx]
+                    self.table[next_idx] = None
+                    self.size -= 1
+                    self.add(rehash_key, rehash_value)
+                    next_idx = (next_idx + 1) % self.capacity
+
+                return
+            idx = (idx + 1) % self.capacity
+            if idx == start_idx:
+                break
+
+        raise KeyError("Key not found")
+
+    def __str__(self):
+        return str([item for item in self.table if item is not None])
+ 
+           ```
+</details>
 
 ## More Knowledge
 
