@@ -1215,8 +1215,10 @@ class FixedArrayQueue:
         - exists(key)
         - get(key)
         - remove(key)
-<summary>Answers.</summary>
+
 <details>
+
+<summary>Answers.</summary>
 	
  ```
  class HashTable:
