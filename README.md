@@ -1308,7 +1308,8 @@ class FixedArrayQueue:
     def __str__(self):
         return str([item for item in self.table if item is not None])
  
-           ```
+  ```
+
 </details>
 
 ## More Knowledge
