@@ -1317,14 +1317,65 @@ class FixedArrayQueue:
 ## More Knowledge
 
 - ### Binary search
-    - [ ] [Binary Search (video)](https://www.youtube.com/watch?v=D5SrAga1pno)
-    - [ ] [Binary Search (video)](https://www.khanacademy.org/computing/computer-science/algorithms/binary-search/a/binary-search)
-    - [ ] [detail](https://www.topcoder.com/thrive/articles/Binary%20Search)
-    - [ ] [blueprint](https://leetcode.com/discuss/general-discussion/786126/python-powerful-ultimate-binary-search-template-solved-many-problems)
-    - [ ] [[Review] Binary search in 4 minutes (video)](https://youtu.be/fDKIpRe8GW4)
-    - [ ] Implement:
+    - [x] [Binary Search (video)](https://www.youtube.com/watch?v=D5SrAga1pno)
+    - [x] [Binary Search (video)](https://www.khanacademy.org/computing/computer-science/algorithms/binary-search/a/binary-search)
+    - [x] [detail](https://www.topcoder.com/thrive/articles/Binary%20Search)
+    - [x] [blueprint](https://leetcode.com/discuss/general-discussion/786126/python-powerful-ultimate-binary-search-template-solved-many-problems)
+    - [x] [[Review] Binary search in 4 minutes (video)](https://youtu.be/fDKIpRe8GW4)
+    - [x] Implement:
         - binary search (on a sorted array of integers)
         - binary search using recursion
+<details>
+<summary>Answers.</summary>
+	
+ ```
+#iterative version
+	
+var binarySearch = function(array, targetValue) {
+    var min = 0;
+    var max = array.length - 1;
+    var guess;
+
+    while (min <= max) {
+        guess = Math.floor((min + max) / 2);
+        
+        // Print the current guess index
+        console.log("Guess index: " + guess);
+        
+        if (array[guess] === targetValue) {
+            return guess; // Target found, return the index
+        } else if (array[guess] < targetValue) {
+            min = guess + 1; // Search in the right half
+        } else {
+            max = guess - 1; // Search in the left half
+        }
+    }
+
+    return -1; // Target not found, return -1
+};
+ ```
+```
+#recursive version
+var binarySearchRecursive = function(array, targetValue, min = 0, max = array.length - 1) {
+    if (min > max) {
+        return -1; // Base case: target not found
+    }
+
+    var guess = Math.floor((min + max) / 2);
+    
+    // Print the current guess index
+    console.log("Guess index: " + guess);
+    
+    if (array[guess] === targetValue) {
+        return guess; // Target found, return the index
+    } else if (array[guess] < targetValue) {
+        return binarySearchRecursive(array, targetValue, guess + 1, max); // Search in the right half
+    } else {
+        return binarySearchRecursive(array, targetValue, min, guess - 1); // Search in the left half
+    }
+};
+``` 
+</details>
 
 - ### Bitwise operations
     - [ ] [Bits cheat sheet](https://github.com/jwasham/coding-interview-university/blob/main/extras/cheat%20sheets/bits-cheat-sheet.pdf)
